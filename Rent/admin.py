@@ -6,3 +6,4 @@ admin.site.register(Inventory)
 admin.site.register(RentalRecord)
 
 # Register your models here.
+#HELLO
