@@ -1,9 +1,7 @@
 from django.contrib import admin
-from .models import MyUser, Inventory, RentalRecord
+from .models import Inventory, SupplyAplication ,RentApplication
 
-admin.site.register(MyUser)
 admin.site.register(Inventory)
-admin.site.register(RentalRecord)
-
+admin.site.register(RentApplication)
+admin.site.register(SupplyAplication)
 # Register your models here.
-#HELLO
