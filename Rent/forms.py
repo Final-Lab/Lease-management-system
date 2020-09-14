@@ -1,5 +1,4 @@
 from django import forms
-from .models import MyUser
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
@@ -10,14 +9,14 @@ passwordInputWidget = {
 
 class RegisterForm(forms.ModelForm):
     class Meta:
-        model = MyUser
+        model = User
         fields = '__all__'
         widgets = [passwordInputWidget]
 
 
 class LoginForm(forms.ModelForm):
     class Meta:
-        model = MyUser
+        model = User
         fields = ['username', 'password']
         widgets = [passwordInputWidget]
 
