@@ -2,7 +2,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from .models import MyUser,Inventory,RentalRecord,RentApplication
+from .models import Inventory,RentalRecord,RentApplication
 from .forms import RegisterForm, LoginForm, RegistrateUserForm
 # from .decorators import user_login_required
 from django.contrib.auth.models import Group
@@ -58,10 +58,6 @@ def my_login(request):
             return JsonResponse({"error": "not loged in"})
     else:
         return JsonResponse({"error": "require POST"})
-
-
-def get_user(request):
-    return MyUser.objects.get(id=request.session['user_id'])
 
 
 # @user_login_required
