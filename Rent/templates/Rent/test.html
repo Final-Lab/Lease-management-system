@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+</head>
+<body>
+     <div style="margin: 15% 40%;">
+        <h2 id="state">{{ state }}</h2>
+       <form action="" method="post" name="form">
+            {% csrf_token %}
+            <p>
+                <label for="id_username">用户名：</label>
+                <input type="text" id="id_username" name="username" placeholder="username">
+            </p>
+            <p>
+                <label for="id_password">密码：</label>
+                <input type="password" id="id_password" placeholder="password" name="password1" >
+            </p>
+
+            <p>
+                <label>密码2(only register)：</label>
+                <input type="password" placeholder="confirm password" name="password2" >
+            </p>
+            <p>
+                <label for="id_password">邮箱(only register)：</label>
+                <input type="text" placeholder="email address" name="email" >
+            </p>
+           <input type="submit" value="登录" onclick="form.action='/login/'">
+           <input type="submit" value="注册" onclick="form.action='/register/'">
+           <input type="submit" value="退出" onclick="form.action='/logout/'">
+       </form>
+         <form action="" method="get" name="form2">
+            {% csrf_token %}
+            <p>
+                <label>userid：</label>
+                <input type="text"  id="user_id" placeholder="用户id">
+            </p>
+             <p>
+                <label>request_type：</label>
+                <input type="text"  id="request_type" placeholder="搜索类型">
+            </p>
+
+             <input type="submit" value="申请" onclick="form2.action='/supplier/'">
+             <input type="submit" value="查询" onclick="form2.action='/rented/'+user_id.value">
+             <input type="submit" value="检查" onclick="form2.action=user_id.value+'/requests'">
+             <input type="submit" value="个人信息" onclick="form2.action=user_id.value+request_type">
+       </form>
+    </div>
+
+</body>
+</html>
