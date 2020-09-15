@@ -2,41 +2,95 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from .models import Inventory,RentalRecord,RentApplication
-from .forms import RegisterForm, LoginForm, RegistrateUserForm
+from .models import EmailValid,Inventory,RentalRecord,RentApplication
+from .forms import EmailForm, RegisterForm, LoginForm, RegistrateUserForm
 # from .decorators import user_login_required
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm,  AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
+import random,time
+from django.core.mail import send_mail
+import hashlib
+
+
+def  pwd_encrypt(password):                 #encryption function
+	md5 = hashlib.md5()
+	md5.update(password.encode())
+	result = md5.hexdigest()
+	return result
+
+
+def get_random_data():                      #create random num 4 digits
+	number = random.randint(1000,9999)
+	return number
 
 
 
-def  test(request):
+def test(request):                                                                  #can be removed when test ends
     if request.user.is_authenticated:
         return render(request, 'test.html', {"state": "已登录:"+request.user.username+" id:"+ str(request.user.id)})
     return render(request, 'test.html', {"state": "请登录:"})
 
+
+def register_page(request):
+    return render(request, 'register.html')
+
+
 @csrf_exempt
 def register(request):
     form = RegistrateUserForm()
+
+
+def register_get_code(request):
+    render(request, 'register.html', {"state": ""})
     if request.method == 'POST':
-        form = RegistrateUserForm(request.POST)
-        print(request.POST['username'])
-        print(request.POST['email'])
-        print(request.POST['password1'])
-        print(request.POST['password2'])
-        if form.is_valid():
-            pw1 = request.POST['password1']
-            pw2 = request.POST['password2']
-            if pw1 != pw2:
-                return JsonResponse({'error': "password not same"})
-            user = form.save()
-            #group = Group.objects.get(name='Users')                    #not sure
-            #user.groups.add(group)
-            return JsonResponse({'message': "ok"})
+        email = request.POST.get('email')
+        if email:
+            try:
+                number = get_random_data()
+                subject = '验证码'                                          # title
+                text_content = html_content ="Hello,您的验证码为：%d"%number
+                email_valid = EmailValid()
+                email_valid.sec_code = number
+                email_valid.email = email
+                email_valid.save()
+                status = send_mail(subject, text_content, '1723225155@qq.com', [email])
+                # 参数为主题，内容，寄件人邮箱，以及传递过来的邮箱
+            except Exception as err:
+                return JsonResponse({"error": str(err)})
+            else:                                                                                        #发送验证码成功
+                return render(request, 'register.html', {"state": "已获取验证码", "email": email,})        #can be remove later
         else:
-            return JsonResponse({'error': form.errors})
+            return JsonResponse({"error": "invalid email address"})
+    else:
+        return JsonResponse({"error": "require POST"})
+
+
+def register_confirm(request):
+    if request.method == 'POST':
+        if not User.objects.filter(email=request.POST['email']).exists():
+            if EmailValid.objects.filter(email=request.POST['email']).exists():
+                form = EmailValid.objects.get(email=request.POST['email'])
+                if form.sec_code == request.POST['sec_code']:
+                    pw1 = request.POST['password1']
+                    pw2 = request.POST['password2']
+                    if pw1 != pw2:
+                        return JsonResponse({'error': "password not the same"})
+                    if User.objects.filter(username=request.POST['username']).exists():
+                        return JsonResponse({'error': "Username already exists"})
+                    user = User.objects.create_user(username=request.POST['username'], email=request.POST['email'],
+                    password = pw1)
+                    user.save()
+                    #group = Group.objects.get(name='Users')                                    #not sure
+                    #user.groups.add(group)
+                    return render(request, 'register.html', {"state": "注册成功"})                #can be remove later
+                else:
+                    return JsonResponse({'error': form.errors})
+            else:
+                return JsonResponse({'error': "This email_address hasn't get sec_code"})
+        else:
+            return JsonResponse({'error': "This email_address already registered"})
     else:
         return JsonResponse({"error": "require POST"})
 
@@ -101,8 +155,7 @@ def check_rented_items(request, user_id):
         if request.user.is_authenticated:
             if User.objects.filter(id=user_id).exists():
                 user=User.objects.get(id=user_id)
-                User_name = user.username
-                all_rentinfo = RentalRecord.objects.filter(student=User_name)           #not sure
+                all_rentinfo = RentalRecord.objects.filter(student=user.username)           #not sure
                 list = []
                 if all_rentinfo.exists():
                     for info in all_rentinfo:
