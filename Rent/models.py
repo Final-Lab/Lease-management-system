@@ -2,6 +2,14 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class EmailValid(models.Model):
+    email = models.CharField(max_length=255)
+    sec_code = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.email
+
+
 class Inventory(models.Model):
     name = models.CharField(max_length=255)
     status = models.CharField(max_length=255)
@@ -9,6 +17,13 @@ class Inventory(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class RentalRecord(models.Model):
+    student = models.CharField(max_length=255)
+    status = models.CharField(max_length=255)
+    item = models.ForeignKey(Inventory, default=1, on_delete=models.CASCADE,)
+    reason = models.CharField(max_length=255)
 
 
 class RentApplication(models.Model):
@@ -19,7 +34,7 @@ class RentApplication(models.Model):
     date = models.DateField(auto_now_add=True, blank=True, null=True)
     type = models.CharField(max_length=255,blank=True, null=True)
     def __str__(self):
-        return self.type
+        return self.status
 
 
 class SupplyAplication(models.Model):
