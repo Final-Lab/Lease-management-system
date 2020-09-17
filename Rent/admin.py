@@ -8,10 +8,7 @@ from .models import Inventory, SupplyAplication ,RentApplication
 from django.utils.html import format_html
 from django.contrib.auth.models import User, Group
 
-#admin.site.register(RentApplication)
-# admin.site.register(SupplyAplication)
-# Register your models here.
-
+admin.site.site_header = 'Administration'
 
 @admin.register(RentApplication)
 class RentApplicationAdmin(admin.ModelAdmin):
@@ -59,12 +56,25 @@ class RentApplicationAdmin(admin.ModelAdmin):
 
     def accept_rent(self,request,req_id):
         #print(req_id)
+
         req = self.get_object(request,req_id)
-        req.status = "Accepted"
-        #user = item.student
-        print('look here')
-        #print(user)
-        req.save()
+        if req.type == 'Add':
+            req.status = "Accepted"
+            item = req.item
+            item.status = 'Available'
+            item.save()
+            req.item = item
+            #print(user)
+            req.save()
+        if req.type == 'Rent':
+            req.status = "Accepted"
+            item = req.item
+            item.status = 'Taken'
+            item.save()
+            req.item = item
+            # print(user)
+            req.save()
+
         return HttpResponseRedirect('/admin/Rent/rentapplication/')
 
 
@@ -80,7 +90,7 @@ class RentApplicationAdmin(admin.ModelAdmin):
 class Inventory(admin.ModelAdmin):
     list_display = ('id','name', 'status', 'supplier')
     list_display_links = [
-        'supplier'
+        'supplier','id','name'
     ]
     list_filter = ("status",)
     search_fields = ["supplier__username", 'status','name']
