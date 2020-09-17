@@ -26,13 +26,22 @@ SECRET_KEY = 'a339e2cec#&@1i)-_$q8+2y0tl_q2a53bfaf8##@eni=e9aclo'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+# QQ
 EMAIL_HOST = "smtp.qq.com"
 EMAIL_HOST_USER = "1723225155@qq.com"   # 邮箱
 EMAIL_HOST_PASSWORD = "mmbwwzdtpkkhcdce"   # 邮箱授权码
 EMAIL_USE_TLS= True
 EMAIL_FROM = "1723225155@qq.com"  # 邮箱
 
+#Gmail
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#MAILER_EMAIL_BACKEND = EMAIL_BACKEND
+#EMAIL_HOST = "smtp.gmail.com"
+#EMAIL_PORT = 587 # SMTP service port number
+#EMAIL_HOST_USER = "bighomeworkcodesender@gmail.com"   # 邮箱
+#EMAIL_HOST_PASSWORD = "mhtrwqu653"   # 邮箱授权码
+#EMAIL_USE_TLS= True
+#EMAIL_FROM = "bighomeworkcodesender@gmail.com"  # 邮箱
 
 INSTALLED_APPS = [
     'django.contrib.admin',
